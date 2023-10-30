@@ -49,12 +49,12 @@ userroute.post("/login", async(req, res) =>{
                     res.status(200).json({msg:"Login successfull!",token:token})
                 }
                 else{
-                    res.status(200).json({error:"Wrong Credential"})
+                    res.status(400).json({error:"Wrong Credential"})
                 }
             })
         }
         else{
-            res.status(200).json({msg:"User not found"})
+            res.status(400).json({msg:"User not found"})
         }
     }
     catch(err){
