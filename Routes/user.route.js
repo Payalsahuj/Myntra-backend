@@ -17,7 +17,7 @@ userroute.post("/register",async(req,res)=>{
             try{
                 bcrypt.hash(password,5,async(err,hash)=>{
                     if(err){
-                        res.status(400).json({"error":err})
+                        res.status(400).json({error:err})
                     }
                     else{
                         const user = new usermodule({ name, email,password: hash })
@@ -28,7 +28,7 @@ userroute.post("/register",async(req,res)=>{
                 })
             }
             catch(err){
-                res.status(200).json({"error":err})
+                res.status(400).json({error:err})
             }
         }
     }
