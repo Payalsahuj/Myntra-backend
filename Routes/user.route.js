@@ -49,7 +49,7 @@ userroute.post("/login", async(req, res) =>{
                     res.status(200).json({msg:"Login successfull!",token:token})
                 }
                 else{
-                    res.status(200).json({err:"Wrong Credential"})
+                    res.status(200).json({error:"Wrong Credential"})
                 }
             })
         }

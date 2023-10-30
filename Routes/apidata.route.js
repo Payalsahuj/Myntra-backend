@@ -17,7 +17,7 @@ apiroute.post("/api/chat/completions",auth, async (req, res) => {
         },
       });
   
-      res.json(axiosResponse.data);
+      res.status(200).json({msg: axiosResponse.data });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Proxy server error" });
@@ -33,7 +33,7 @@ apiroute.post("/api/chat/completions",auth, async (req, res) => {
     try {
       const axiosResponse = await axios.get(url);
   
-      res.json(axiosResponse.data);
+      res.status(200).json({msg: axiosResponse.data });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "weather server error" });
@@ -48,7 +48,7 @@ apiroute.post("/api/chat/completions",auth, async (req, res) => {
     try {
       const axiosResponse = await axios.get(url);
   
-      res.json(axiosResponse.data);
+      res.status(200).json({msg: axiosResponse.data });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "weather server error" });
