@@ -42,7 +42,7 @@ userroute.post("/login", async(req, res) =>{
     const {email,password}=req.body
     try{
         const user=await usermodule.findOne({email})
-        if(user){
+        if(user.length!=0){
             bcrypt.compare(password,user.password, (err,result)=>{
                 if(result){
                     var token=jwt.sign({course:"backend",email:user.email},"payal")
