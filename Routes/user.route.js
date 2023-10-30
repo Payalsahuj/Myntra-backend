@@ -9,8 +9,8 @@ const userroute=express.Router()
 userroute.post("/register",async(req,res)=>{
     let {name,email,password}=req.body
     if(/\d/.test(password) && /[A-Z]/.test(password) && /[!@#$%^&*]/.test(password) && password.length >= 8){
-        const data=await usermodule.find({email})
-        if(data.length!=0){
+        const data=await usermodule.findOne({email})
+        if(data){
             res.status(400).json({ error: "This Account has already been registered" })
         }
         else{
@@ -41,8 +41,9 @@ userroute.post("/register",async(req,res)=>{
 userroute.post("/login", async(req, res) =>{
     const {email,password}=req.body
     try{
-        const user=await usermodule.find({email})
-        if(user.length!=0){
+        const user=await usermodule.findOne({email})
+        console.log(user)
+        if(user){
             bcrypt.compare(password,user.password, (err,result)=>{
                 if(result){
                     var token=jwt.sign({course:"backend",email:user.email},"payal")
