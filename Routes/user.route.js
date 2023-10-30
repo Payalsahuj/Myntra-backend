@@ -41,7 +41,7 @@ userroute.post("/register",async(req,res)=>{
 userroute.post("/login", async(req, res) =>{
     const {email,password}=req.body
     try{
-        const user=await usermodule.findOne({email})
+        const user=await usermodule.find({email})
         if(user.length!=0){
             bcrypt.compare(password,user.password, (err,result)=>{
                 if(result){
