@@ -3,7 +3,16 @@ const { auth } = require("../Middleware/auth.middleware");
 const axios=require("axios");
 const { usermodule } = require("../Models/user.model");
 
-
+apiroute.get("/data",auth,async(req,res)=>{
+  const email = req.body.email;
+  try{
+    const data = await usermodule.findOne({ email });
+    res.status(200).json({msg: data});
+  }
+  catch(error){
+    res.status(400).json({error: error});
+  }
+})
 
 const apiroute=express.Router()
 let conversationHistory = [];
@@ -56,7 +65,7 @@ apiroute.post("/api/chat/completions",auth, async (req, res) => {
          res.status(200).json({msg: data});
        })
        .catch((error) => {
-         console.error(error);
+         res.status(400).json({error: error});
        });
    
        
@@ -105,7 +114,7 @@ apiroute.post("/api/chat/completions",auth, async (req, res) => {
          res.status(200).json({msg: data});
        })
        .catch((error) => {
-         console.error(error);
+        res.status(400).json({error: error});
        });
    
        
@@ -188,7 +197,7 @@ apiroute.post("/api/chat/completions",auth, async (req, res) => {
             res.status(200).json({msg: data});
           })
           .catch((err)=>{
-            console.log(err)
+            res.status(400).json({error: error});
           })
 
        
