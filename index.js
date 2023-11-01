@@ -12,6 +12,10 @@ app.use(cors())
 
 
 app.get("/", (req, res) => {
+  const currentTime = new Date().toLocaleString("en-US", {
+    timeZone: "Asia/Kolkata"
+  });
+  console.log(currentTime)
   res.send("Proxy server is running");
 });
 app.use("/user",userroute)
