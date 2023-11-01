@@ -3,6 +3,9 @@ const { auth } = require("../Middleware/auth.middleware");
 const axios=require("axios");
 const { usermodule } = require("../Models/user.model");
 
+const apiroute=express.Router()
+
+
 apiroute.get("/data",auth,async(req,res)=>{
   const email = req.body.email;
   try{
@@ -14,7 +17,6 @@ apiroute.get("/data",auth,async(req,res)=>{
   }
 })
 
-const apiroute=express.Router()
 let conversationHistory = [];
 apiroute.post("/api/chat/completions",auth, async (req, res) => {
     const url = "https://chat.nbox.ai/api/chat/completions";
