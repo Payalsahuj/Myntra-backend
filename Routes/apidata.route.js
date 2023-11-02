@@ -142,6 +142,9 @@ apiroute.post("/api/chat/completions",auth, async (req, res) => {
   });
   
   const openai = new OpenAIApi(configuration);
+
+
+
   apiroute.get("/weather",auth, async (req, res) => {
     const location=req.body.location
     const city=req.body.city
@@ -201,7 +204,7 @@ apiroute.post("/api/chat/completions",auth, async (req, res) => {
             timeZone: "Asia/Kolkata"
           });
           response.data.time=recTime
-          response.data.role="user"
+          response.data.role="assistant"
           conversationHistory.push(response.data)
           
           await usermodule.findByIdAndUpdate({_id:user._id}, { $set: { [`weatherchats.chat${chatKey}`]:  conversationHistory} })
@@ -219,7 +222,7 @@ apiroute.post("/api/chat/completions",auth, async (req, res) => {
               timeZone: "Asia/Kolkata"
             });
             response.data.time=recTime
-            response.data.role="user"
+            response.data.role="assistant"
             conversationHistory.push(response.data)
             
             await usermodule.findByIdAndUpdate({_id:user._id}, { $set: { [`weatherchats.chat${chatKey}`]:  conversationHistory} })
@@ -252,7 +255,7 @@ apiroute.post("/api/chat/completions",auth, async (req, res) => {
             timeZone: "Asia/Kolkata"
           });
           response.data.time=recTime
-          response.data.role="user"
+          response.data.role="assistant"
           conversationHistory.push(response.data)
           
           await usermodule.findByIdAndUpdate({_id:user._id}, { $set: { [`weatherchats.chat${chatKey}`]:  conversationHistory} })
@@ -267,7 +270,7 @@ apiroute.post("/api/chat/completions",auth, async (req, res) => {
               timeZone: "Asia/Kolkata"
             });
             response.data.time=recTime
-            response.data.role="user"
+            response.data.role="assistant"
             conversationHistory.push(response.data)
             await usermodule.findByIdAndUpdate({_id:user._id}, { $push: { [`weatherchats.${status}`]:  {$each: conversationHistory}} })
             const data = await usermodule.findOne({ email });
@@ -324,18 +327,18 @@ apiroute.post("/api/chat/completions",auth, async (req, res) => {
             }
             else if(response.data.articles.length==1){
               obj.news1=response.data.articles[0]
-              obj.role="user"
+              obj.role="assistant"
             }
             else if(response.data.articles.length==2){
               obj.news1=response.data.articles[0]
             obj.news2=response.data.articles[1]
-            obj.role="user"
+            obj.role="assistant"
             }
             else{
               obj.news1=response.data.articles[0]
             obj.news2=response.data.articles[1]
             obj.news3=response.data.articles[2]
-            obj.role="user"
+            obj.role="assistant"
             }
             
             conversationHistory.push(obj)
@@ -379,18 +382,18 @@ apiroute.post("/api/chat/completions",auth, async (req, res) => {
             }
             else if(response.data.articles.length==1){
               obj.news1=response.data.articles[0]
-              obj.role="user"
+              obj.role="assistant"
             }
             else if(response.data.articles.length==2){
               obj.news1=response.data.articles[0]
             obj.news2=response.data.articles[1]
-            obj.role="user"
+            obj.role="assistant"
             }
             else{
               obj.news1=response.data.articles[0]
             obj.news2=response.data.articles[1]
             obj.news3=response.data.articles[2]
-            obj.role="user"
+            obj.role="assistant"
             }
             
             conversationHistory.push(obj)
