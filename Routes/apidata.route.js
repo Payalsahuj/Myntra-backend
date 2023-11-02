@@ -146,10 +146,11 @@ apiroute.post("/api/chat/completions",auth, async (req, res) => {
 
 
   apiroute.post("/weather",auth, async (req, res) => {
-    const location=req.body.location
+    
     const city=req.body.city
     const email = req.body.email;
     const status = req.body.status;
+    const location="chennai"
     const user = await usermodule.findOne({ email });
     
 
