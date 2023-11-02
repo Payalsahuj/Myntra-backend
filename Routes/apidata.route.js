@@ -5,6 +5,7 @@ const { usermodule } = require("../Models/user.model");
 
 const apiroute=express.Router()
 
+const { Configuration, OpenAIApi } = require("openai");
 
 apiroute.get("/data",auth,async(req,res)=>{
   const email = req.body.email;
@@ -131,12 +132,55 @@ apiroute.post("/api/chat/completions",auth, async (req, res) => {
 
 
 
+
+
+
+
+
+  const configuration = new Configuration({
+    apiKey: process.env.API_KEY,
+  });
+  
+  const openai = new OpenAIApi(configuration);
   apiroute.get("/weather",auth, async (req, res) => {
+    const location=req.body.location
     const city=req.body.city
     const email = req.body.email;
     const status = req.body.status;
     const user = await usermodule.findOne({ email });
-    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${process.env.Weather_key}`;
+    
+
+
+
+    const response = await openai.createChatCompletion({
+      model: "gpt-3.5-turbo",
+      messages: [
+        {
+          role: "system",
+          content:
+            "Please act like a city shorting machine which go through all the content and only give city name 'Example: if input is waht is the temperature of Raipur then olny return Raipur' after checking the data and if there is no city name and the question is like the current lcation or near by area related to that then just say 'Current' and if there is nothing related to city temperature or current then just return 'Nothing'. IMPORTANT: Do not give answer other then that 'city name','Current' and 'Nothing'",
+        },
+        {
+          role:"user",
+          content:city
+        },
+      ],
+      max_tokens: 130,
+      temperature: 0,
+    });
+
+
+    let chatbotResponse =
+        response.data.choices[0].message.content ;
+        if(chatbotResponse=="I am an AI language model designed to assist with answering questions and providing information. How can I assist you today?"){
+          chatbotResponse= "I'm a AI model Designspecifically for Weather informations, How can I assist you today?" 
+        }
+        else if(chatbotResponse=="Current"){
+          chatbotResponse=location
+        }
+    
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${chatbotResponse}&units=metric&appid=${process.env.Weather_key}`;
+
   
     if (status === "new chat" && user.email === req.body.email) {
       conversationHistory=[]
@@ -149,9 +193,25 @@ apiroute.post("/api/chat/completions",auth, async (req, res) => {
       });
       
      
-      conversationHistory.push({ role:"user", content: city,time:sendTime });
+      conversationHistory.push({ role:"user", content: chatbotResponse,time:sendTime });
       try {
+        if(chatbotResponse==="I'm a AI model Designspecifically for Weather informations, How can I assist you today?"){
+          let response={"data":{}}
+          const recTime = new Date().toLocaleString("en-US", {
+            timeZone: "Asia/Kolkata"
+          });
+          response.data.time=recTime
+          response.data.role="user"
+          conversationHistory.push(response.data)
+          
+          await usermodule.findByIdAndUpdate({_id:user._id}, { $set: { [`weatherchats.chat${chatKey}`]:  conversationHistory} })
+          const data = await usermodule.findOne({ email });
+          res.status(200).json({msg: data});
+        }
+        else{
+
         
+
           axios.get(url)
           .then(async(response)=>{
            
@@ -169,6 +229,7 @@ apiroute.post("/api/chat/completions",auth, async (req, res) => {
           .catch((err)=>{
             res.status(400).json({ error: err });
           })
+        }
             
     }
     catch (error) {
@@ -182,9 +243,23 @@ apiroute.post("/api/chat/completions",auth, async (req, res) => {
         const sendTime = new Date().toLocaleString("en-US", {
           timeZone: "Asia/Kolkata"
         });
-        conversationHistory.push({ role:"user", content: city,time:sendTime });
+        conversationHistory.push({ role:"user", content: chatbotResponse,time:sendTime });
       
       try {
+        if(chatbotResponse==="I'm a AI model Designspecifically for Weather informations, How can I assist you today?"){
+          let response={"data":{}}
+          const recTime = new Date().toLocaleString("en-US", {
+            timeZone: "Asia/Kolkata"
+          });
+          response.data.time=recTime
+          response.data.role="user"
+          conversationHistory.push(response.data)
+          
+          await usermodule.findByIdAndUpdate({_id:user._id}, { $set: { [`weatherchats.chat${chatKey}`]:  conversationHistory} })
+          const data = await usermodule.findOne({ email });
+          res.status(200).json({msg: data});
+        }
+        else{
         axios.get(url)
           .then(async(response)=>{
             
@@ -199,10 +274,10 @@ apiroute.post("/api/chat/completions",auth, async (req, res) => {
             res.status(200).json({msg: data});
           })
           .catch((err)=>{
-            res.status(400).json({error: error});
+            res.status(400).json({error: err});
           })
 
-       
+        }
        
     }
     catch (error) {
