@@ -178,11 +178,15 @@ apiroute.post("/api/chat/completions",auth, async (req, res) => {
         response.data.choices[0].message.content ;
         if(chatbotResponse=="I am an AI language model designed to assist with answering questions and providing information. How can I assist you today?"){
           chatbotResponse= "I'm a AI model Designspecifically for Weather informations, How can I assist you today?" 
+          
         }
         else if(chatbotResponse=="Current"){
           chatbotResponse=location
         }
-    
+
+        
+  
+        console.log(chatbotResponse)
         const url = `https://api.openweathermap.org/data/2.5/weather?q=${chatbotResponse}&units=metric&appid=${process.env.Weather_key}`;
 
   
@@ -197,7 +201,7 @@ apiroute.post("/api/chat/completions",auth, async (req, res) => {
       });
       
      
-      conversationHistory.push({ role:"user", content: chatbotResponse,time:sendTime });
+      conversationHistory.push({ role:"user", content: city,time:sendTime });
       try {
         if(chatbotResponse==="I'm a AI model Designspecifically for Weather informations, How can I assist you today?"){
           let response={"data":{}}
@@ -205,6 +209,21 @@ apiroute.post("/api/chat/completions",auth, async (req, res) => {
             timeZone: "Asia/Kolkata"
           });
           response.data.time=recTime
+          response.data.content=chatbotResponse
+          response.data.role="assistant"
+          conversationHistory.push(response.data)
+          
+          await usermodule.findByIdAndUpdate({_id:user._id}, { $set: { [`weatherchats.chat${chatKey}`]:  conversationHistory} })
+          const data = await usermodule.findOne({ email });
+          res.status(200).json({msg: data});
+        }
+        else if(chatbotResponse=="Nothing"){
+          let response={"data":{}}
+          const recTime = new Date().toLocaleString("en-US", {
+            timeZone: "Asia/Kolkata"
+          });
+          response.data.time=recTime
+          response.data.content="I'm a AI model Designspecifically for Weather informations, How can I assist you today?"
           response.data.role="assistant"
           conversationHistory.push(response.data)
           
@@ -241,25 +260,43 @@ apiroute.post("/api/chat/completions",auth, async (req, res) => {
       res.status(400).json({ error: "Proxy server error" });
     }
   }
+
+
     else{
       
         conversationHistory=[]
         const sendTime = new Date().toLocaleString("en-US", {
           timeZone: "Asia/Kolkata"
         });
-        conversationHistory.push({ role:"user", content: chatbotResponse,time:sendTime });
+        conversationHistory.push({ role:"user", content: city,time:sendTime });
       
       try {
         if(chatbotResponse==="I'm a AI model Designspecifically for Weather informations, How can I assist you today?"){
+          
           let response={"data":{}}
           const recTime = new Date().toLocaleString("en-US", {
             timeZone: "Asia/Kolkata"
           });
           response.data.time=recTime
+          response.data.content=chatbotResponse
           response.data.role="assistant"
           conversationHistory.push(response.data)
           
-          await usermodule.findByIdAndUpdate({_id:user._id}, { $set: { [`weatherchats.chat${chatKey}`]:  conversationHistory} })
+          await usermodule.findByIdAndUpdate({_id:user._id}, { $push: { [`weatherchats.chat${status}`]: {$each: conversationHistory}} })
+          const data = await usermodule.findOne({ email });
+          res.status(200).json({msg: data});
+        }
+        else if(chatbotResponse=="Nothing"){
+          let response={"data":{}}
+          const recTime = new Date().toLocaleString("en-US", {
+            timeZone: "Asia/Kolkata"
+          });
+          response.data.time=recTime
+          response.data.content="I'm a AI model Designspecifically for Weather informations, How can I assist you today?"
+          response.data.role="assistant"
+          conversationHistory.push(response.data)
+          console.log(conversationHistory)
+          await usermodule.findByIdAndUpdate({_id:user._id}, { $push: { [`weatherchats.${status}`]:  {$each: conversationHistory}} })
           const data = await usermodule.findOne({ email });
           res.status(200).json({msg: data});
         }
